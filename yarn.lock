@@ -515,7 +515,7 @@ findup-sync@^2.0.0:
 
 fined@^1.0.1:
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/fined/-/fined-1.1.0.tgz#b37dc844b76a2f5e7082e884f7c0ae344f153476"
+  resolved "https://registry.yarnpkg.com/fined/-/fined-1.1.0.tgz#b37dc844b76a2f5e7083e884f7c0ae344f153476"
   dependencies:
     expand-tilde "^2.0.2"
     is-plain-object "^2.0.3"
