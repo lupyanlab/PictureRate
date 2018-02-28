@@ -1,0 +1,2 @@
+picture_to_rate,choices,multiple_choices_allowed,randomize_choices,min_choice,max_choice
+img/ugandanknuck.jpg,"['feminine', 'masculine', 'sharp', 'rounded', 'small', 'large']",True,False,1,4

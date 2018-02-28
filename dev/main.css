@@ -1,0 +1,49 @@
+.center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+#scale{
+      position:absolute;  
+    z-index:1;
+}
+
+#canvas{
+      position:relative;
+      width:800px;
+      height:136.97px;  
+    z-index:20;
+}
+
+#audio-placeholder {
+        -webkit-filter: invert(0%);
+}
+
+.jspsych-content {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: unset;
+    margin-bottom: unset;
+    max-width: 75% !important;
+}
+
+.btn-green {
+    background-color: #1ab394;
+    color: #fff;
+    border-radius: 3px;
+}
+.btn-green:hover, .btn-green:focus {
+    background-color: #18a689;
+    color: #fff;
+}
+.panel-footer {
+    padding: 0 15px;
+    border:none;
+    text-align: right;
+    background-color: #fff;
+}
+
+.survey {
+    text-align: left;
+}
