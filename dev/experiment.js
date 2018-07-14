@@ -43,8 +43,8 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
     let welcome_block = {
         type: "html-keyboard-response",
         choices: [32],
-        stimulus: `<h1>Picture Rate</h1>
-        <p class="lead">Welcome to the experiment. Thank you for participating! Press SPACE to begin.</p>`
+        stimulus: `<h1>Thanks for accepting this HIT!</h1>
+        <p class="lead">The next page will show you the instrucitons. Press SPACE to begin.</p>`
     };
 
     timeline.push(welcome_block);
@@ -56,21 +56,25 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
         key_forward: 'space',
         key_backward: 'backspace',
         pages: [
-            `<p class="lead">Insert Instructions
+            `<p class="lead">You will be seeing 12 drawings of imaginary creatures. For each, you will be asked to indicate whether they have one or more of the listed properties. Thanks!
             </p> ${continue_space}`,
         ]
     };
 
     timeline.push(instructions);
 
-    let trial_number = 1;
+    let trial_number = 0;
     let num_trials = trials.length;
     document.trials = trials;
 
-    // Pushes each audio trial to timeline
+    // Pushes each trial to timeline
     for (let trial of trials) {
         let choices = trial.randomize_choices ? _.shuffle(trial.choices) : trial.choices;
         // Empty Response Data to be sent to be collected
+        
+        // jsPsych.setProgressBar((trial_number - 1) / num_trials)
+
+        trial_number++;
         let response = {
             workerId: subjCode,
             trialNum: trial_number,
@@ -86,12 +90,15 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
         }
         let stimHTML = `
             <div class="row center-xs center-sm center-md center-lg center-block">
-                <img src="../dev/${trial.picture_to_rate}">
+                <img src="../dev/${trial.picture_to_rate}", height=330, width=330>
+            </div>
+            <div class="progress progress-striped active">
+                <div class="progress-bar progress-bar-success" style="width: ${trial_number / num_trials * 100}%;"></div>
             </div>`;
 
         let questions = [
             {
-                prompt: `<h4></h4>${trial.multiple_choices_allowed ? `<span style='font-size:15px'>Please pick between ${trial.min_choice} and ${trial.max_choice} choices.</span>` : ''}`,
+                prompt: `<h4></h4>${trial.multiple_choices_allowed ? `<center><span style='font-size:25px'>Please select between ${trial.min_choice} and ${trial.max_choice} choices that best characterize this creature.</span></center>` : ''}`,
                 options: trial.randomize_choices ? _.shuffle(trial.choices) : trial.choices,
                 horizontal: true,
                 required: true
@@ -105,7 +112,7 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
                 preamble: stimHTML,
                 questions: questions,
                 required: required,
-                required_msg: `Please pick between ${trial.min_choice} and ${trial.max_choice} choices.`,
+                required_msg: `Please select between ${trial.min_choice} and ${trial.max_choice} choices.`,
                 min_choice: trial.min_choice,
                 max_choice: trial.max_choice,
 
@@ -114,6 +121,7 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
                     response.chosen = data.responses.Q0;
                     response.rt = data.rt;
                     response.expTimer = data.time_elapsed / 1000;
+
                     console.log(response);
 
                     // POST response data to server
@@ -126,8 +134,6 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
                             console.log(data);
                         }
                     })
-                    trial_number++;
-                    jsPsych.setProgressBar((trial_number - 1) / num_trials)
                 }
             }
             timeline.push(multiSelectTrial);
@@ -137,7 +143,7 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
                 type: 'survey-multi-choice',
                 preamble: stimHTML,
                 questions: questions,
-                required_msg: `Please pick a choice.`,
+                required_msg: `Please make a selection.`,
 
                 on_finish: function (data) {
                     console.log(JSON.parse(data.responses));
@@ -146,8 +152,6 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
                     response.chosen = data.responses.Q0;
                     response.rt = data.rt;
                     response.expTimer = data.time_elapsed / 1000;
-                    trial_number++;
-                    jsPsych.setProgressBar((trial_number - 1) / num_trials)
 
                     // POST response data to server
                     $.ajax({
@@ -171,27 +175,85 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
         key_forward: 'space',
         key_backward: 'backspace',
         pages: [
-            `<p class="lead">This is a filler for instructions for the questions.
+            `<p class="lead">We'll now ask you a few demographic questions and we'll be done!
             </p> ${continue_space}`,
         ]
     };
     timeline.push(questionsInstructions);
 
-    let demographicsQuestions = [
-        { type: "radiogroup", name: "gender", isRequired: true, title: "What is your gender?", choices: ["Male", "Female", "Other", "Perfer not to say"] },
 
-        { type: "radiogroup", name: "native", isRequired: true, title: "Are you a native English speaker", choices: ["Yes", "No"] },
-        { type: "text", name: "native language", visibleIf: "{native}='No'", title: "Please indicate your native language or languages:" },
+  let demographicsQuestions = [
 
-        { type: "text", name: "languages", title: "What other languages do you speak?" },
+    { type: "text", name: "strategy", title: "Briefly, how did you go about making your selections?", width: "auto" },
 
-        { type: "text", name: "age", title: "What is your age?", width: "auto" },
 
-        { type: "radiogroup", name: "degree", isRequired: true, title: "What is the highest degree or level of shcool you have completed/ If currently enrolled, highest degree received.", choices: ["Less than high school", "High school diploma", "Some college, no degree", "associates|Associate's degree", "bachelors|Bachelor's degree", "masters|Master's degree", "PhD, law, or medical degree", "Prefer not to say"] },
-        { type: "text", name: "favorite hs subject", visibleIf: "{degree}='Less than high school' or {degree}='High school diploma' or {degree}='Some college, no degree'", title: "What was your favorite subject in high school?" },
-        { type: "text", name: "college", visibleIf: "{degree}='associates' or {degree}='bachelors' or {degree}='masters' or {degree}='PhD, law, or medical degree'", title: "What did you study in college?" },
-        { type: "text", name: "grad", visibleIf: "{degree}='masters' or {degree}='PhD, law, or medical degree'", title: "What did you study in graduate school?" },
-    ]
+    {
+      type: "radiogroup",
+      name: "gender",
+      isRequired: true,
+      title: "What is your gender?",
+      choices: ["Male", "Female", "Other", "Prefer not to say"]
+    },
+
+    {
+      type: "radiogroup",
+      name: "native",
+      isRequired: true,
+      title: "Are you a native English speaker",
+      choices: ["Yes", "No"]
+    },
+    {
+      type: "text",
+      name: "native language",
+      visibleIf: "{native}='No'",
+      title: "Please indicate your native language or languages:"
+    },
+
+    {
+      type: "text",
+      name: "languages",
+      title: "What other languages do you speak?"
+    },
+
+
+    { type: "text", name: "age", title: "What is your age?", width: "auto" },
+
+    {
+      type: "radiogroup",
+      name: "degree",
+      isRequired: true,
+      title: "What is the highest degree or level of school you have completed/ If currently enrolled, please indicate highest degree received.",
+      choices: [
+        "lt_highschool|Less than high school",
+        "highSchool|High school diploma",
+        "somecollege|Some college, no degree",
+        "associates|Associate's degree",
+        "bachelors|Bachelor's degree",
+        "masters|Master's degree",
+        "terminal|PhD, law, or medical degree",
+        "noResp|Prefer not to say"
+      ]
+    },
+    {
+      type: "text",
+      name: "favorite hs subject",
+      visibleIf: "{degree}='Less than high school' or {degree}='High school diploma' or {degree}='Some college, no degree'",
+      title: "What was your favorite subject in high school?"
+    },
+    {
+      type: "text",
+      name: "college",
+      visibleIf: "{degree}='associates' or {degree}='bachelors' or {degree}='masters' or {degree}='terminal'",
+      title: "What did you study in college?"
+    },
+    {
+      type: "text",
+      name: "grad",
+      visibleIf: "{degree}='masters' or {degree}='terminal'",
+      title: "What did you study in graduate school?"
+    }
+  ];
+
 
     let demographicsTrial = {
         type: 'surveyjs',
@@ -212,13 +274,14 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
 
             let endmessage = `
                 <p class="lead">Thank you for participating! Your completion code is <strong>${participantID}</strong>. Copy and paste this in 
-                MTurk to get paid. If you have any questions or comments, please email jsulik@wisc.edu.</p>
+                MTurk to get paid. If you have any questions or comments, please email lupyan@wisc.edu.</p>
                 
                 <h3>Debriefing </h3>
                 <p class="lead">
-                Thank you for your participation. The study is designed to collect information about the different ways 
-                in which people typically represent thoughts in their mind. The responses will be used in the 
-                development of a shorter questionnaire to assess differences in these representations. 
+                Thank you for your participation. The drawings you saw were drawn by 
+                other Turkers who were asked to draw imaginary creatures called by various names (for example, cruckwick and fissil).
+                By having people rate the drawings on various qualities (like you did just now), we gain an understanding
+                of inherent meanings that certain language sounds may have. 
                 </p>
                 `
             jsPsych.endExperiment(endmessage);
@@ -229,7 +292,7 @@ function runExperiment(trials, subjCode, questions, workerId, assignmentId, hitI
     jsPsych.init({
         timeline: timeline,
         fullscreen: FULLSCREEN,
-        show_progress_bar: true,
+        show_progress_bar: false,
         auto_update_progress_bar: false
     });
 }

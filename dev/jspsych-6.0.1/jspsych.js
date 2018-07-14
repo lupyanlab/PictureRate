@@ -99,9 +99,9 @@ window.jsPsych = (function() {
       // have 100% height, and body to be full width and height with
       // no margin
       document.querySelector('html').style.height = '100%';
-      document.querySelector('body').style.margin = '0px';
+      document.querySelector('body').style.margin = '8px';
       document.querySelector('body').style.height = '100%';
-      document.querySelector('body').style.width = '100%';
+      document.querySelector('body').style.width = '92%';
       opts.display_element = document.querySelector('body');
     } else {
       // make sure that the display element exists on the page
