@@ -26,8 +26,3 @@ When you are done, run the following command on Sapir and go to http://sapir.psy
 ```sh
 npm run prod
 ```
-
-
-## Switching from CSV to JSON and Vice Versa for Data Collection
-
-Open `fileformat.js` and switch which file format you want the data and demographics in. You **must restart** the node api server (pm2) after making these changes.
